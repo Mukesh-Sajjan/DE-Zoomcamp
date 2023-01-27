@@ -1,0 +1,553 @@
+(base) mukesh@de-zoomcamp:~/data-engineering-zoomcamp/week_1_basics_n_setup/2_do                                                                             cker_sql$ pgcli -h localhost -U root -d ny_taxi
+Load your password from keyring returned:
+No recommended backend was available. Install a recommended 3rd party backend pa                                                                             ckage; or, install the keyrings.alt package if you want to use the non-recommend                                                                             ed backends. See https://pypi.org/project/keyring for details.
+To remove this message do one of the following:
+- prepare keyring as described at: https://keyring.readthedocs.io/en/stable/
+- uninstall keyring: pip uninstall keyring
+- disable keyring in our configuration: add keyring = False to [main]
+Password for root:
+Set password in keyring returned:
+No recommended backend was available. Install a recommended 3rd party backend pa                                                                             ckage; or, install the keyrings.alt package if you want to use the non-recommend                                                                             ed backends. See https://pypi.org/project/keyring for details.
+To remove this message do one of the following:
+- prepare keyring as described at: https://keyring.readthedocs.io/en/stable/
+- uninstall keyring: pip uninstall keyring
+- disable keyring in our configuration: add keyring = False to [main]
+Server: PostgreSQL 13.9 (Debian 13.9-1.pgdg110+1)
+Version: 3.5.0
+Home: http://pgcli.com
+root@localhost:ny_taxi> \d
++--------+-----------------+-------+-------+
+| Schema | Name            | Type  | Owner |
+|--------+-----------------+-------+-------|
+| public | green_taxi_data | table | root  |
+| public | zones           | table | root  |
++--------+-----------------+-------+-------+
+SELECT 2
+Time: 0.016s
+root@localhost:ny_taxi> SELECT CAST(lpep_pickup_datetime AS DATE) as "day",COUNT
+ (1) FROM green_taxi_data t GROUP BY CAST(lpep_pickup_datetime AS DATE) HAVING
+   CAST(lpep_pickup_datetime AS DATE) ='2019-01-15'
++------------+-------+
+| day        | count |
+|------------+-------|
+| 2019-01-15 | 20689 |
++------------+-------+
+SELECT 1
+Time: 0.732s
+root@localhost:ny_taxi> select CAST(lpep_pickup_datetime AS DATE), max(trip_dist
+ ance) from green_taxi_data group by CAST(lpep_pickup_datetime AS DATE) ORDER
+  BY max(trip_distance) DESC
++----------------------+--------+
+| lpep_pickup_datetime | max    |
+|----------------------+--------|
+| 2019-01-15           | 117.99 |
+| 2019-01-18           | 80.96  |
+| 2019-01-28           | 64.27  |
+| 2019-01-01           | 59.13  |
+| 2019-01-05           | 51.79  |
+| 2019-01-22           | 51.36  |
+| 2019-01-24           | 50.37  |
+| 2019-01-31           | 50.07  |
+| 2019-01-17           | 47.48  |
+| 2019-01-26           | 46.21  |
+| 2019-01-13           | 44.42  |
+| 2019-01-04           | 43.84  |
+| 2019-01-03           | 42.8   |
+| 2019-01-20           | 42.07  |
+| 2019-01-29           | 41.37  |
+| 2019-01-12           | 41.24  |
+| 2019-01-21           | 41.18  |
+| 2019-01-27           | 40.86  |
+| 2019-01-19           | 40.7   |
+| 2019-01-16           | 40.19  |
+| 2019-01-30           | 38.6   |
+| 2019-01-25           | 37.41  |
+| 2019-01-23           | 36.8   |
+| 2019-01-14           | 36.07  |
+| 2019-01-02           | 35.57  |
+| 2019-01-06           | 34.71  |
+| 2019-01-11           | 34.11  |
+| 2009-01-01           | 11.23  |
+| 2019-02-01           | 8.84   |
+| 2018-12-31           | 8.73   |
+| 2010-09-23           | 6.57   |
+| 2018-12-05           | 0.0    |
+| 2018-12-04           | 0.0    |
+| 2018-12-21           | 0.0    |
+| 2018-12-07           | 0.0    |
++----------------------+--------+
+SELECT 35
+
+[1]+  Stopped                 pgcli -h localhost -U root -d ny_taxi
+(base) mukesh@de-zoomcamp:~/data-engineering-zoomcamp/week_1_basics_n_setup/2_do                                                                             cker_sql$ pgcli -h localhost -U root -d ny_taxi
+Load your password from keyring returned:
+No recommended backend was available. Install a recommended 3rd party backend pa                                                                             ckage; or, install the keyrings.alt package if you want to use the non-recommend                                                                             ed backends. See https://pypi.org/project/keyring for details.
+To remove this message do one of the following:
+- prepare keyring as described at: https://keyring.readthedocs.io/en/stable/
+- uninstall keyring: pip uninstall keyring
+- disable keyring in our configuration: add keyring = False to [main]
+Password for root:
+Set password in keyring returned:
+No recommended backend was available. Install a recommended 3rd party backend pa                                                                             ckage; or, install the keyrings.alt package if you want to use the non-recommend                                                                             ed backends. See https://pypi.org/project/keyring for details.
+To remove this message do one of the following:
+- prepare keyring as described at: https://keyring.readthedocs.io/en/stable/
+- uninstall keyring: pip uninstall keyring
+- disable keyring in our configuration: add keyring = False to [main]
+Server: PostgreSQL 13.9 (Debian 13.9-1.pgdg110+1)
+Version: 3.5.0
+Home: http://pgcli.com
+root@localhost:ny_taxi> SELECT passenger_count, COUNT(*) FROM green_taxi_data WH
+ ERE CAST(lpep_pickup_datetime as DATE) = '2019-01-01' GROUP BY passenger_count
+ HAVING passenger_count
+  IN (2,3)
++-----------------+-------+
+| passenger_count | count |
+|-----------------+-------|
+| 2               | 1282  |
+| 3               | 254   |
++-----------------+-------+
+SELECT 2
+Time: 0.092s
+root@localhost:ny_taxi> select  g. "PULocationID" ,g."DOLocationID",z."Zone",  m
+ ax(g.tip_amount) from green_taxi_data as g join zones z on g."DOLocationID"
+  = z."LocationID"  where g."PULocationID" = 7  group by g."PULocationID",g."DOL
+ ocationID",z."Zone"  ORDER BY max(g.tip_amount) DESC limit 1
++--------------+--------------+-------------------------------+------+
+| PULocationID | DOLocationID | Zone                          | max  |
+|--------------+--------------+-------------------------------+------|
+| 7            | 146          | Long Island City/Queens Plaza | 88.0 |
++--------------+--------------+-------------------------------+------+
+SELECT 1
+Time: 0.078s
+root@localhost:ny_taxi>
+Goodbye!
+(base) mukesh@de-zoomcamp:~/data-engineering-zoomcamp/week_1_basics_n_setup/2_do                                                                             cker_sql$ docker --help
+
+Usage:  docker [OPTIONS] COMMAND
+
+A self-sufficient runtime for containers
+
+Options:
+      --config string      Location of client config files (default
+                           "/home/mukesh/.docker")
+  -c, --context string     Name of the context to use to connect to the
+                           daemon (overrides DOCKER_HOST env var and
+                           default context set with "docker context use")
+  -D, --debug              Enable debug mode
+  -H, --host list          Daemon socket(s) to connect to
+  -l, --log-level string   Set the logging level
+                           ("debug"|"info"|"warn"|"error"|"fatal")
+                           (default "info")
+      --tls                Use TLS; implied by --tlsverify
+      --tlscacert string   Trust certs signed only by this CA (default
+                           "/home/mukesh/.docker/ca.pem")
+      --tlscert string     Path to TLS certificate file (default
+                           "/home/mukesh/.docker/cert.pem")
+      --tlskey string      Path to TLS key file (default
+                           "/home/mukesh/.docker/key.pem")
+      --tlsverify          Use TLS and verify the remote
+  -v, --version            Print version information and quit
+
+Management Commands:
+  builder     Manage builds
+  config      Manage Docker configs
+  container   Manage containers
+  context     Manage contexts
+  image       Manage images
+  manifest    Manage Docker image manifests and manifest lists
+  network     Manage networks
+  node        Manage Swarm nodes
+  plugin      Manage plugins
+  secret      Manage Docker secrets
+  service     Manage services
+  stack       Manage Docker stacks
+  swarm       Manage Swarm
+  system      Manage Docker
+  trust       Manage trust on Docker images
+  volume      Manage volumes
+
+Commands:
+  attach      Attach local standard input, output, and error streams to a runnin                                                                             g container
+  build       Build an image from a Dockerfile
+  commit      Create a new image from a container's changes
+  cp          Copy files/folders between a container and the local filesystem
+  create      Create a new container
+  diff        Inspect changes to files or directories on a container's filesyste                                                                             m
+  events      Get real time events from the server
+  exec        Run a command in a running container
+  export      Export a container's filesystem as a tar archive
+  history     Show the history of an image
+  images      List images
+  import      Import the contents from a tarball to create a filesystem image
+  info        Display system-wide information
+  inspect     Return low-level information on Docker objects
+  kill        Kill one or more running containers
+  load        Load an image from a tar archive or STDIN
+  login       Log in to a Docker registry
+  logout      Log out from a Docker registry
+  logs        Fetch the logs of a container
+  pause       Pause all processes within one or more containers
+  port        List port mappings or a specific mapping for the container
+  ps          List containers
+  pull        Pull an image or a repository from a registry
+  push        Push an image or a repository to a registry
+  rename      Rename a container
+  restart     Restart one or more containers
+  rm          Remove one or more containers
+  rmi         Remove one or more images
+  run         Run a command in a new container
+  save        Save one or more images to a tar archive (streamed to STDOUT by de                                                                             fault)
+  search      Search the Docker Hub for images
+  start       Start one or more stopped containers
+  stats       Display a live stream of container(s) resource usage statistics
+  stop        Stop one or more running containers
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+  top         Display the running processes of a container
+  unpause     Unpause all processes within one or more containers
+  update      Update configuration of one or more containers
+  version     Show the Docker version information
+  wait        Block until one or more containers stop, then print their exit cod                                                                             es
+
+Run 'docker COMMAND --help' for more information on a command.
+
+To get more help with docker, check out our guides at https://docs.docker.com/go                                                                             /guides/
+(base) mukesh@de-zoomcamp:~/data-engineering-zoomcamp/week_1_basics_n_setup/2_do                                                                             cker_sql$ pip list
+Package                       Version
+----------------------------- --------------------
+alabaster                     0.7.12
+anaconda-client               1.11.0
+anaconda-navigator            2.3.1
+anaconda-project              0.11.1
+anyio                         3.5.0
+appdirs                       1.4.4
+argon2-cffi                   21.3.0
+argon2-cffi-bindings          21.2.0
+arrow                         1.2.2
+astroid                       2.11.7
+astropy                       5.1
+atomicwrites                  1.4.0
+attrs                         21.4.0
+Automat                       20.2.0
+autopep8                      1.6.0
+Babel                         2.9.1
+backcall                      0.2.0
+backports.functools-lru-cache 1.6.4
+backports.tempfile            1.0
+backports.weakref             1.0.post1
+bcrypt                        3.2.0
+beautifulsoup4                4.11.1
+binaryornot                   0.4.4
+bitarray                      2.5.1
+bkcharts                      0.2
+black                         22.6.0
+bleach                        4.1.0
+bokeh                         2.4.3
+boto3                         1.24.28
+botocore                      1.27.28
+Bottleneck                    1.3.5
+brotlipy                      0.7.0
+certifi                       2022.9.14
+cffi                          1.15.1
+chardet                       4.0.0
+charset-normalizer            2.0.4
+cli-helpers                   2.3.0
+click                         8.0.4
+cloudpickle                   2.0.0
+clyent                        1.2.2
+colorama                      0.4.5
+colorcet                      3.0.0
+conda                         22.9.0
+conda-build                   3.22.0
+conda-content-trust           0.1.3
+conda-pack                    0.6.0
+conda-package-handling        1.9.0
+conda-repo-cli                1.0.20
+conda-token                   0.4.0
+conda-verify                  3.4.2
+configobj                     5.0.8
+constantly                    15.1.0
+cookiecutter                  1.7.3
+cryptography                  36.0.2
+cssselect                     1.1.0
+cycler                        0.11.0
+Cython                        0.29.32
+cytoolz                       0.11.0
+daal4py                       2021.6.0
+dask                          2022.7.0
+datashader                    0.14.1
+datashape                     0.5.4
+debugpy                       1.5.1
+decorator                     5.1.1
+defusedxml                    0.7.1
+diff-match-patch              20200713
+dill                          0.3.4
+distributed                   2022.7.0
+distro                        1.8.0
+docker                        6.0.1
+docker-compose                1.29.2
+dockerpty                     0.4.1
+docopt                        0.6.2
+docutils                      0.18.1
+entrypoints                   0.4
+et-xmlfile                    1.1.0
+fastjsonschema                2.16.2
+filelock                      3.6.0
+flake8                        4.0.1
+Flask                         1.1.2
+fonttools                     4.25.0
+fsspec                        2022.7.1
+future                        0.18.2
+gensim                        4.1.2
+glob2                         0.7
+gmpy2                         2.1.2
+greenlet                      1.1.1
+h5py                          3.7.0
+HeapDict                      1.0.1
+holoviews                     1.15.0
+hvplot                        0.8.0
+hyperlink                     21.0.0
+idna                          3.3
+imagecodecs                   2021.8.26
+imageio                       2.19.3
+imagesize                     1.4.1
+importlib-metadata            4.11.3
+importlib-resources           5.10.2
+incremental                   21.3.0
+inflection                    0.5.1
+iniconfig                     1.1.1
+intake                        0.6.5
+intervaltree                  3.1.0
+ipykernel                     6.15.2
+ipython                       7.31.1
+ipython-genutils              0.2.0
+ipywidgets                    7.6.5
+isort                         5.9.3
+itemadapter                   0.3.0
+itemloaders                   1.0.4
+itsdangerous                  2.0.1
+jdcal                         1.4.1
+jedi                          0.18.1
+jeepney                       0.7.1
+jellyfish                     0.9.0
+Jinja2                        2.11.3
+jinja2-time                   0.2.0
+jmespath                      0.10.0
+joblib                        1.1.0
+json5                         0.9.6
+jsonschema                    3.2.0
+jupyter                       1.0.0
+jupyter_client                7.3.4
+jupyter-console               6.4.3
+jupyter_core                  4.11.1
+jupyter-server                1.18.1
+jupyterlab                    3.4.4
+jupyterlab-pygments           0.1.2
+jupyterlab-server             2.10.3
+jupyterlab-widgets            1.0.0
+keyring                       23.4.0
+kiwisolver                    1.4.2
+lazy-object-proxy             1.6.0
+libarchive-c                  2.9
+llvmlite                      0.38.0
+locket                        1.0.0
+lxml                          4.9.1
+lz4                           3.1.3
+Markdown                      3.3.4
+MarkupSafe                    2.0.1
+matplotlib                    3.5.2
+matplotlib-inline             0.1.6
+mccabe                        0.7.0
+mistune                       0.8.4
+mkl-fft                       1.3.1
+mkl-random                    1.2.2
+mkl-service                   2.4.0
+mock                          4.0.3
+mpmath                        1.2.1
+msgpack                       1.0.3
+multipledispatch              0.6.0
+munkres                       1.1.4
+mycli                         1.26.1
+mypy-extensions               0.4.3
+navigator-updater             0.3.0
+nbclassic                     0.3.5
+nbclient                      0.5.13
+nbconvert                     6.4.4
+nbformat                      5.5.0
+nest-asyncio                  1.5.5
+networkx                      2.8.4
+nltk                          3.7
+nose                          1.3.7
+notebook                      6.4.12
+numba                         0.55.1
+numexpr                       2.8.3
+numpy                         1.21.5
+numpydoc                      1.4.0
+olefile                       0.46
+openpyxl                      3.0.10
+packaging                     21.3
+pandas                        1.4.4
+pandocfilters                 1.5.0
+panel                         0.13.1
+param                         1.12.0
+paramiko                      3.0.0
+parsel                        1.6.0
+parso                         0.8.3
+partd                         1.2.0
+pathlib                       1.0.1
+pathspec                      0.9.0
+patsy                         0.5.2
+pendulum                      2.1.2
+pep8                          1.7.1
+pexpect                       4.8.0
+pgcli                         3.5.0
+pgspecial                     2.0.1
+pickleshare                   0.7.5
+Pillow                        9.2.0
+pip                           22.2.2
+pkginfo                       1.8.2
+platformdirs                  2.5.2
+plotly                        5.9.0
+pluggy                        1.0.0
+ply                           3.11
+poyo                          0.5.0
+prometheus-client             0.14.1
+prompt-toolkit                3.0.20
+Protego                       0.1.16
+psutil                        5.9.0
+psycopg                       3.1.8
+psycopg2-binary               2.9.5
+ptyprocess                    0.7.0
+py                            1.11.0
+pyaes                         1.6.1
+pyasn1                        0.4.8
+pyasn1-modules                0.2.8
+pycodestyle                   2.8.0
+pycosat                       0.6.3
+pycparser                     2.21
+pyct                          0.4.8
+pycurl                        7.45.1
+PyDispatcher                  2.0.5
+pydocstyle                    6.1.1
+pyerfa                        2.0.0
+pyflakes                      2.4.0
+Pygments                      2.11.2
+PyHamcrest                    2.0.2
+PyJWT                         2.4.0
+pylint                        2.14.5
+pyls-spyder                   0.4.0
+PyMySQL                       1.0.2
+PyNaCl                        1.5.0
+pyodbc                        4.0.34
+pyOpenSSL                     22.0.0
+pyparsing                     3.0.9
+pyperclip                     1.8.2
+PyQt5-sip                     12.11.0
+pyrsistent                    0.18.0
+PySocks                       1.7.1
+pytest                        7.1.2
+python-dateutil               2.8.2
+python-dotenv                 0.21.1
+python-lsp-black              1.2.1
+python-lsp-jsonrpc            1.0.0
+python-lsp-server             1.5.0
+python-slugify                5.0.2
+python-snappy                 0.6.0
+pytz                          2022.1
+pytzdata                      2020.1
+pyviz-comms                   2.0.2
+PyWavelets                    1.3.0
+pyxdg                         0.27
+PyYAML                        5.4.1
+pyzmq                         23.2.0
+QDarkStyle                    3.0.2
+qstylizer                     0.1.10
+QtAwesome                     1.0.3
+qtconsole                     5.3.2
+QtPy                          2.2.0
+queuelib                      1.5.0
+regex                         2022.7.9
+requests                      2.28.1
+requests-file                 1.5.1
+rope                          0.22.0
+Rtree                         0.9.7
+ruamel-yaml-conda             0.15.100
+s3transfer                    0.6.0
+scikit-image                  0.19.2
+scikit-learn                  1.0.2
+scikit-learn-intelex          2021.20221004.171807
+scipy                         1.9.1
+Scrapy                        2.6.2
+seaborn                       0.11.2
+SecretStorage                 3.3.1
+Send2Trash                    1.8.0
+service-identity              18.1.0
+setproctitle                  1.3.2
+setuptools                    63.4.1
+sip                           6.6.2
+six                           1.16.0
+smart-open                    5.2.1
+sniffio                       1.2.0
+snowballstemmer               2.2.0
+sortedcollections             2.1.0
+sortedcontainers              2.4.0
+soupsieve                     2.3.1
+Sphinx                        5.0.2
+sphinxcontrib-applehelp       1.0.2
+sphinxcontrib-devhelp         1.0.2
+sphinxcontrib-htmlhelp        2.0.0
+sphinxcontrib-jsmath          1.0.1
+sphinxcontrib-qthelp          1.0.3
+sphinxcontrib-serializinghtml 1.1.5
+spyder                        5.3.3
+spyder-kernels                2.3.3
+SQLAlchemy                    1.4.39
+sqlglot                       10.5.6
+sqlparse                      0.4.3
+statsmodels                   0.13.2
+sympy                         1.10.1
+tables                        3.6.1
+tabulate                      0.8.10
+TBB                           0.2
+tblib                         1.7.0
+tenacity                      8.0.1
+terminado                     0.13.1
+testpath                      0.6.0
+text-unidecode                1.3
+textdistance                  4.2.1
+texttable                     1.6.7
+threadpoolctl                 2.2.0
+three-merge                   0.1.1
+tifffile                      2021.7.2
+tinycss                       0.4
+tldextract                    3.2.0
+toml                          0.10.2
+tomli                         2.0.1
+tomlkit                       0.11.1
+toolz                         0.11.2
+tornado                       6.1
+tqdm                          4.64.1
+traitlets                     5.1.1
+Twisted                       22.2.0
+typing_extensions             4.3.0
+ujson                         5.4.0
+Unidecode                     1.2.0
+urllib3                       1.26.11
+w3lib                         1.21.0
+watchdog                      2.1.6
+wcwidth                       0.2.5
+webencodings                  0.5.1
+websocket-client              0.58.0
+Werkzeug                      2.0.3
+whatthepatch                  1.0.2
+wheel                         0.37.1
+widgetsnbextension            3.5.2
+wrapt                         1.14.1
+wurlitzer                     3.0.2
+xarray                        0.20.1
+xlrd                          2.0.1
+XlsxWriter                    3.0.3
+yapf                          0.31.0
+zict                          2.1.0
+zipp                          3.8.0
+zope.interface                5.4.0
+(base) mukesh@de-zoomcamp:~/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql$                                                                    
