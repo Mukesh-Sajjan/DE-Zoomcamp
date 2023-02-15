@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+   - name: staging
+     database:ny-rides-mukesh
+     schema: trips_data_all
+
+     tables:
+       - name: fhv_partitioned_tripdata
+
+       
