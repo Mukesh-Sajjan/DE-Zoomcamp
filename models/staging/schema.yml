@@ -19,5 +19,7 @@ sources:
         - name: fhv_partitioned_tripdata
         - name: green_tripdata
         - name: yellow_tripdata
+        - name: meets
+        - name: openpowerlifting
          # freshness:
            # error_after: {count: 6, period: hour}
